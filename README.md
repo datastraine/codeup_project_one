@@ -1,1 +1,7 @@
-# codeup_project_one
+# Codeup Project One
+
+This repository is designed to hold exercise work for my first project with [CodeUp's data sceience bootcamp](https://codeup.com/ds-admissions/). In this note book you will find
+
+1) Data preperation files 
+2) Initial data explorations
+3) Final Product Jupyter Notebook
