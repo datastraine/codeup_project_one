@@ -5,8 +5,12 @@ from sklearn.model_selection import train_test_split
 
 def prep_telco():
     telco = acquire.get_telco()
+    # drop duplicate columns from the joins
     telco.drop(columns=['internet_service_type_id.1', 'payment_type_id.1', 'contract_type_id.1', 
             'internet_service_type_id', 'payment_type_id', 'contract_type_id'], inplace = True)
+    # Turn the total_charages column into a float column
+    telco['total_charges'] = pd.to_numeric(telco['total_charges'],errors='coerce')
+    # Create a int bool for churn where churn = 1
     telco.replace({'churn': {'No': 0, 'Yes': 1}}, inplace = True)
     # Creates a tenue_year column 
     telco['tenure_year'] = round(telco['tenure']/12, 2)
@@ -20,6 +24,10 @@ def prep_telco():
     telco['backedup_and_secured'] = (telco['online_security'] == 'Yes') & (telco['online_backup'] == 'Yes')
     # creates a has internet column to see if having internet at all impacts churn
     telco['has_internet'] = (telco['internet_service_type'] != 'None')
+    # Creates a monthly charages column for analysis
+    telco['monthly_charges'] = telco['total_charges']/telco['tenure']
+    # Create a monthly_charage >= 75 bool value column
+    telco['monthly_75+'] = telco['monthly_charges'] >= 75
     # Turns all True and False/Yes and No values into 1s and 0s for easier analysis
     telco = telco.applymap(lambda x: 0 if x == False else x)
     telco = telco.applymap(lambda x: 1 if x == True else x)
@@ -27,6 +35,8 @@ def prep_telco():
     telco = telco.applymap(lambda x: 0 if x == 'No' else x)
     telco = telco.applymap(lambda x: 0 if x == 'No internet service' else x)
     telco = telco.applymap(lambda x: 0 if x == 'No phone service' else x)
+    # We'll drop the rows where total_charages is blank as these are new customers
+    telco.dropna(inplace = True) 
     # Splits the df into train, validate, test sets for analysis
     train_validate, test = train_test_split(telco, test_size=.2, random_state=333, stratify=telco.churn)
     train, validate = train_test_split(train_validate, 

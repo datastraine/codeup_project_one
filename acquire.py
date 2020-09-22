@@ -15,7 +15,8 @@ def get_telco():
         df = pd.read_sql("""select * from telco_churn.customers left join telco_churn.internet_service_types
         on telco_churn.internet_service_types.internet_service_type_id = telco_churn.customers.internet_service_type_id left join telco_churn.payment_types
 on telco_churn.payment_types.payment_type_id = telco_churn.customers.payment_type_id left join telco_churn.contract_types
-on telco_churn.contract_types.contract_type_id = telco_churn.customers.contract_type_id""", get_connection('telco_churn'))
+on telco_churn.contract_types.contract_type_id = telco_churn.customers.contract_type_id
+""", get_connection('telco_churn'))
 
         # Write that dataframe to disk for later. Called "caching" the data for later.
         df.to_csv(filename, index=False)
